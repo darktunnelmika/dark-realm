@@ -32,6 +32,32 @@ jobs:
           tar -xJf /tmp/dark-realm-src.tar.xz -C /tmp/dark-realm-source
           cp -a /tmp/dark-realm-source/. .
 
+          # OpenSSL 3.0 on some distributions prints a hostname mismatch while
+          # returning status 0. Make SAN validation depend on the canonical
+          # positive output so production and CI behave identically.
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path("dark-realm.sh")
+          source = path.read_text()
+          old = '''cert_matches_host() {
+            local cert="$1" host="$2"
+            openssl x509 -in "$cert" -noout -checkhost "$host" >/dev/null 2>&1
+          }
+          '''
+          new = '''cert_matches_host() {
+            local cert="$1" host="$2" output
+            # OpenSSL 3.0 on some distributions prints a hostname mismatch while still
+            # returning status 0. Parse the canonical positive result instead of trusting
+            # the process exit code so SAN validation behaves consistently everywhere.
+            output="$(openssl x509 -in "$cert" -noout -checkhost "$host" 2>&1 || true)"
+            printf '%s\\n' "$output" | grep -Fq 'does match certificate'
+          }
+          '''
+          if old not in source:
+              raise SystemExit("certificate validation function was not found")
+          path.write_text(source.replace(old, new, 1))
+          PY
+
           # Workflow files are committed separately through the authorized
           # GitHub connection after this source transaction succeeds.
           rm -f .github/workflows/ci.yml .github/workflows/release.yml
