@@ -1,0 +1,7 @@
+*.bak
+*.tmp
+*.log
+*.tar.gz
+.DS_Store
+.idea/
+.vscode/
