@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install validation tools
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck openssl
+
+      - name: Bash syntax
+        run: bash -n dark-realm.sh install.sh tests/test.sh
+
+      - name: ShellCheck errors
+        run: shellcheck --severity=error -e SC1090 dark-realm.sh install.sh tests/test.sh
+
+      - name: Security and config regression tests
+        run: ./tests/test.sh
+
+      - name: Verify documented version
+        run: |
+          version="$(sed -n 's/^SCRIPT_VER="\([^"]*\)"/\1/p' dark-realm.sh | head -n1)"
+          test -n "$version"
+          grep -q "DARK REALM PRO v${version}" README.md
+          grep -q "DARK REALM PRO v${version}" README.fa.md
