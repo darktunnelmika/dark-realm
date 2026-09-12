@@ -1,0 +1,24 @@
+name: Feature request
+description: Propose a native Realm-backed capability
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: "The shared DARK UI may be extended, but the Realm engine must remain faithful to upstream capabilities."
+  - type: textarea
+    id: problem
+    attributes:
+      label: Operational problem
+    validations:
+      required: true
+  - type: textarea
+    id: upstream
+    attributes:
+      label: Relevant native Realm capability or upstream reference
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed operator flow
+    validations:
+      required: true

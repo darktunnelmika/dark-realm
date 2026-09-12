@@ -1,0 +1,36 @@
+name: Bug report
+description: Report a reproducible DARK REALM PRO problem
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Remove credentials, private keys, production Pair Codes and server passwords before submitting."
+  - type: input
+    id: version
+    attributes:
+      label: Manager version
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: input
+    id: core
+    attributes:
+      label: Realm core version
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Redacted logs
+      render: shell
